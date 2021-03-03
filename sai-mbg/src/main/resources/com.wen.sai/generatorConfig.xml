@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration PUBLIC
+        "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+    <!-- 添加配置文件 -->
+    <properties resource="com.wen.sai/generator.properties"/>
+    <context id="MySQLContext" targetRuntime="MyBatis3DynamicSQL">
+        <!-- 指明数据库用于标记数据库对象名的符号，比如 Oracle 就是双引号，MySQL 默认是 ` 反引号 -->
+        <property name="beginningDelimiter" value="`"/>
+        <property name="endingDelimiter" value="`"/>
+        <!-- 生成的 Java 文件的编码 -->
+        <property name="javaFileEncoding" value="UTF-8"/>
+        <!-- 生成序列化方法 -->
+        <plugin type="org.mybatis.generator.plugins.SerializablePlugin"/>
+        <!-- 生成 toString 方法 -->
+        <plugin type="org.mybatis.generator.plugins.ToStringPlugin"/>
+        <!-- 注释生成器 -->
+        <commentGenerator type="com.wen.sai.common.generator.CommentGenerator">
+        </commentGenerator>
+        <!-- 数据库连接配置 -->
+        <jdbcConnection driverClass="${dataSource.driverName}"
+                        connectionURL="${dataSource.url}"
+                        userId="${dataSource.username}"
+                        password="${dataSource.password}">
+            <!-- 不加会无法生成指定数据库的表，反而会生成同一连接下其他数据库的表 -->
+            <property name="nullCatalogMeansCurrent" value="true"/>
+        </jdbcConnection>
+        <javaTypeResolver>
+            <!-- 把 DECIMAL 和 NUMERIC 类型解析成 BigDecimal。默认值：false -->
+            <property name="forceBigDecimals" value="true"/>
+        </javaTypeResolver>
+        <!-- 生成 Model 的路径 -->
+        <javaModelGenerator targetPackage="com.wen.sai.model" targetProject="sai-mbg\src\main\java">
+        </javaModelGenerator>
+        <!-- 生成 Mapper 的路径 -->
+        <javaClientGenerator type="XMLMAPPER" targetPackage="com.wen.sai.mapper" targetProject="sai-mbg\src\main\java">
+        </javaClientGenerator>
+        <!-- % 表示生成全部表 -->
+        <table tableName="%" schema="permission">
+            <!-- 表前缀，第一个字母必须大写 -->
+            <domainObjectRenamingRule searchString="^Ums" replaceString=""/>
+            <!-- 字段前缀 -->
+            <columnRenamingRule searchString="is_" replaceString=""/>
+        </table>
+    </context>
+</generatorConfiguration>

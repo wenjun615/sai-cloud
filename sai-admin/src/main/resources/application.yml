@@ -1,0 +1,34 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: sai-admin
+  profiles:
+    active: dev
+  cloud:
+    nacos:
+      discovery:
+        server-addr: http://localhost:8848
+      config:
+        server-addr: http://localhost:8848
+        file-extension: yaml
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+
+mybatis-plus:
+  mapper-locations: classpath:com.wen.sai/mapper/*.xml
+
+redis:
+  database: sai-cloud
+  key:
+    admin: 'ums:admin'
+    roleList: 'ums:roleList'
+  expire: 86400 # 秒 24 小时

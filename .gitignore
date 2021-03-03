@@ -1,0 +1,7 @@
+# Project exclude paths
+/sai-admin/target/
+/sai-auth/target/
+/sai-common/target/
+/sai-gateway/target/
+/sai-mbg/target/
+/sai-monitor/target/

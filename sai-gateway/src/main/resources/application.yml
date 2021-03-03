@@ -1,0 +1,59 @@
+server:
+  port: 8201
+
+spring:
+  application:
+    name: sai-gateway
+  profiles:
+    active: dev
+  cloud:
+    nacos:
+      discovery:
+        server-addr: http://localhost:8848
+    gateway:
+      discovery:
+        locator:
+          enabled: true # 开启从注册中心动态创建路由功能
+          lower-case-service-id: true # 使用小写服务名
+      routes:
+        - id: sai-auth
+          uri: lb://sai-auth # uri 的协议为 lb
+          predicates:
+            - Path=/sai-auth/**
+          filters:
+            - StripPrefix=1 # 匹配的请求路径去掉第一位，即 / 符号
+        - id: sai-admin
+          uri: lb://sai-admin
+          predicates:
+            - Path=/sai-admin/**
+          filters:
+            - StripPrefix=1
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: 'http://localhost:8201/sai-auth/keyPair/loadPublicKey' # RSA 公钥访问地址
+
+secure:
+  ignore:
+    urls: # 白名单路径
+      - "/swagger-resources/**"
+      - "/**/v3/api-docs"
+      - "/swagger-ui/**"
+      - "/**/*.js"
+      - "/**/*.css"
+      - "/**/*.png"
+      - "/**/*.ico"
+      - "/actuator/**"
+      - "/sai-auth/oauth/token"
+      - "/sai-auth/keyPair/loadPublicKey"
+      - "/sai-admin/admin/login"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always

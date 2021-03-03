@@ -1,0 +1,18 @@
+server:
+  port: 8101
+
+spring:
+  application:
+    name: sai-monitor
+  cloud:
+    nacos:
+      discovery:
+        server-addr: http://localhost:8848
+  security:
+    user:
+      name: admin
+      password: 123456
+  boot:
+    admin:
+      discovery:
+        ignored-services: ${spring.application.name} # 不显示 sai-monitor 的监控信息
