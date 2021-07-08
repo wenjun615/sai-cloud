@@ -2,7 +2,7 @@ package com.wen.sai.component;
 
 import cn.hutool.core.util.StrUtil;
 import com.nimbusds.jose.JWSObject;
-import com.wen.sai.common.domain.constant.AuthConstant;
+import com.wen.sai.common.constant.AuthConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
@@ -13,10 +13,11 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 import java.text.ParseException;
+import java.util.Objects;
 
 /**
  * <p>
- * 将 JWT 中存储的用户信息存储到 Header 中去的全局过滤器
+ * 认证授权全局过滤器
  * </p>
  *
  * @author wenjun
@@ -29,19 +30,26 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
-        String token = request.getHeaders().getFirst(AuthConstant.JWT_TOKEN_HEADER);
-        if (StrUtil.isBlank(token)) {
-            return chain.filter(exchange);
-        }
-        try {
-            String relToken = token.replace(AuthConstant.JWT_TOKEN_PREFIX, "");
-            JWSObject jwsObject = JWSObject.parse(relToken);
-            String user = jwsObject.getPayload().toString();
-            log.info("AuthGlobalFilter user:{}", user);
-            request = request.mutate().header(AuthConstant.USER_HEADER, user).build();
-            exchange = exchange.mutate().request(request).build();
-        } catch (ParseException e) {
-            log.warn(e.getMessage(), e);
+        String authHeader = request.getHeaders().getFirst(AuthConstants.JWT_TOKEN_HEADER);
+        if (StrUtil.isNotBlank(authHeader) && authHeader.startsWith(AuthConstants.JWT_TOKEN_PREFIX)) {
+            String token = authHeader.substring(AuthConstants.JWT_TOKEN_PREFIX.length());
+            JWSObject jwsObject;
+            try {
+                jwsObject = JWSObject.parse(token);
+            } catch (ParseException e) {
+                log.warn("令牌校验异常：{}", e.getMessage(), e);
+                jwsObject = null;
+            }
+            if (Objects.nonNull(jwsObject)) {
+                String user = jwsObject.getPayload().toString();
+                request = request.mutate()
+                        .header(AuthConstants.USER_HEADER, user)
+                        .header(AuthConstants.JWT_TOKEN_HEADER, "")
+                        .build();
+                exchange = exchange.mutate()
+                        .request(request)
+                        .build();
+            }
         }
         return chain.filter(exchange);
     }

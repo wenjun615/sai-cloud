@@ -30,10 +30,7 @@ import java.time.Duration;
 public class RedisConfig {
 
     /**
-     * 添加 RedisTemplate
-     *
-     * @param redisConnectionFactory 连接器
-     * @return RedisTemplate
+     * 添加 RedisTemplate，配置序列化
      */
     @Bean
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
@@ -49,9 +46,6 @@ public class RedisConfig {
 
     /**
      * 缓存管理
-     *
-     * @param redisConnectionFactory 连接器
-     * @return 缓存管理
      */
     @Bean
     public RedisCacheManager redisCacheManager(RedisConnectionFactory redisConnectionFactory) {
@@ -65,8 +59,6 @@ public class RedisConfig {
 
     /**
      * 序列化器
-     *
-     * @return 序列化器
      */
     @Bean
     public RedisSerializer<Object> redisSerializer() {
@@ -74,7 +66,7 @@ public class RedisConfig {
         Jackson2JsonRedisSerializer<Object> serializer = new Jackson2JsonRedisSerializer<>(Object.class);
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-        // 必须设置，否则 Redis 存储的数据反序列化时会转化成 Map 类型
+        // 必须设置，否则数据反序列化时会转化成 Map 类型
         objectMapper.activateDefaultTyping(LaissezFaireSubTypeValidator.instance, ObjectMapper.DefaultTyping.NON_FINAL);
         serializer.setObjectMapper(objectMapper);
         return serializer;

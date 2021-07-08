@@ -1,9 +1,10 @@
 package com.wen.sai.component;
 
 import cn.hutool.json.JSONUtil;
-import com.google.common.net.HttpHeaders;
+import com.wen.sai.common.api.CommonCode;
 import com.wen.sai.common.api.CommonResult;
 import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpResponse;
@@ -30,10 +31,11 @@ public class RestfulAuthenticationEntryPoint implements ServerAuthenticationEntr
     public Mono<Void> commence(ServerWebExchange serverWebExchange, AuthenticationException e) {
         ServerHttpResponse response = serverWebExchange.getResponse();
         response.setStatusCode(HttpStatus.OK);
-        response.getHeaders().set("Access-Control-Allow-Origin", "*");
-        response.getHeaders().set("Cache-Control", "no-cache");
-        response.getHeaders().set(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-        String jsonStr = JSONUtil.toJsonStr(CommonResult.unauthenticated(e.getMessage()));
+        HttpHeaders headers = response.getHeaders();
+        headers.setAccessControlAllowOrigin("*");
+        headers.setCacheControl("no-cache");
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        String jsonStr = JSONUtil.toJsonStr(CommonResult.failed(CommonCode.UNAUTHENTICATED));
         DataBuffer buffer = response.bufferFactory().wrap(jsonStr.getBytes(StandardCharsets.UTF_8));
         return response.writeWith(Mono.just(buffer));
     }

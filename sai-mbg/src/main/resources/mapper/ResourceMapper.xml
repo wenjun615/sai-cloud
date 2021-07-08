@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wen.sai.mapper.ResourceMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.wen.sai.model.Resource">
+        <id column="id" property="id"/>
+        <result column="path" property="path"/>
+        <result column="description" property="description"/>
+        <result column="is_deleted" property="deleted"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, path, description, is_deleted, create_time, update_time
+    </sql>
+
+    <select id="listByUserId" resultMap="BaseResultMap">
+        select t4.id,
+               t4.path,
+               t4.description,
+               t4.create_time
+        from user_role_relation t1
+                 inner join role t2 on t1.role_id = t2.id
+                 inner join role_resource_relation t3 on t2.id = t3.role_id
+                 inner join resource t4 on t3.resource_id = t4.id
+        where t1.user_id = #{userId}
+        order by t4.create_time desc;
+    </select>
+</mapper>

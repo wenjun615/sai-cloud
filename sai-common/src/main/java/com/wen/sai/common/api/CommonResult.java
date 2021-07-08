@@ -4,7 +4,7 @@ import lombok.Data;
 
 /**
  * <p>
- * 公共返回结果封装类
+ * 公共返回结果类
  * </p>
  *
  * @author wenjun
@@ -35,111 +35,48 @@ public class CommonResult<T> {
     }
 
     /**
-     * 成功返回结果
+     * 成功
      *
      * @param data 响应数据
      * @param <T>  响应数据类型
-     * @return 成功返回结果
+     * @return 返回结果
      */
-    public static <T> CommonResult<T> success(T data) {
-        return new CommonResult<>(ResultCodeImpl.SUCCESS.getCode(), ResultCodeImpl.SUCCESS.getMessage(), data);
+    public static <T> CommonResult<T> successful(T data) {
+        return new CommonResult<>(CommonCode.SUCCESS.getCode(), CommonCode.SUCCESS.getMessage(), data);
     }
 
     /**
-     * 成功返回结果
+     * 成功
      *
-     * @param data    响应数据
      * @param message 响应信息
+     * @param data    响应数据
      * @param <T>     响应数据类型
-     * @return 成功返回结果
+     * @return 返回结果
      */
-    public static <T> CommonResult<T> success(T data, String message) {
-        return new CommonResult<>(ResultCodeImpl.SUCCESS.getCode(), message, data);
+    public static <T> CommonResult<T> successful(T data, String message) {
+        return new CommonResult<>(CommonCode.SUCCESS.getCode(), message, data);
     }
 
     /**
-     * 失败返回结果
+     * 失败
      *
-     * @param resultCode 操作码
+     * @param commonCode 公共响应码枚举
      * @param <T>        响应数据类型
-     * @return 失败返回结果
+     * @return 返回结果
      */
-    public static <T> CommonResult<T> failed(ResultCode resultCode) {
-        return new CommonResult<>(resultCode.getCode(), resultCode.getMessage(), null);
+    public static <T> CommonResult<T> failed(CommonCode commonCode) {
+        return new CommonResult<>(commonCode.getCode(), commonCode.getMessage(), null);
     }
 
     /**
-     * 失败返回结果
+     * 失败
      *
-     * @param resultCode 操作码
+     * @param commonCode 公共响应码枚举
      * @param message    响应信息
      * @param <T>        响应数据类型
-     * @return 失败返回结果
-     */
-    public static <T> CommonResult<T> failed(ResultCode resultCode, String message) {
-        return new CommonResult<>(resultCode.getCode(), message, null);
-    }
-
-    /**
-     * 参数验证失败返回结果
-     *
-     * @param <T> 响应数据类型
      * @return 返回结果
      */
-    public static <T> CommonResult<T> validateFailed() {
-        return failed(ResultCodeImpl.VALIDATE_FAILED);
-    }
-
-    /**
-     * 参数验证失败返回结果
-     *
-     * @param message 响应信息
-     * @param <T>     响应数据类型
-     * @return 返回结果
-     */
-    public static <T> CommonResult<T> validateFailed(String message) {
-        return failed(ResultCodeImpl.VALIDATE_FAILED, message);
-    }
-
-    /**
-     * 未登录返回结果
-     *
-     * @param <T> 响应数据类型
-     * @return 返回结果
-     */
-    public static <T> CommonResult<T> unauthenticated() {
-        return failed(ResultCodeImpl.UNAUTHENTICATED);
-    }
-
-    /**
-     * 未登录返回结果
-     *
-     * @param message 响应信息
-     * @param <T>     响应数据类型
-     * @return 返回结果
-     */
-    public static <T> CommonResult<T> unauthenticated(String message) {
-        return failed(ResultCodeImpl.UNAUTHENTICATED, message);
-    }
-
-    /**
-     * 权限不足返回结果
-     *
-     * @param <T> 响应数据类型
-     * @return 返回结果
-     */
-    public static <T> CommonResult<T> unauthorized() {
-        return failed(ResultCodeImpl.UNAUTHORISED);
-    }
-
-    /**
-     * 权限不足返回结果
-     *
-     * @param message 响应信息
-     * @param <T>     响应数据类型
-     * @return 返回结果
-     */
-    public static <T> CommonResult<T> unauthorized(String message) {
-        return failed(ResultCodeImpl.UNAUTHORISED, message);
+    public static <T> CommonResult<T> failed(CommonCode commonCode, String message) {
+        return new CommonResult<>(commonCode.getCode(), message, null);
     }
 }

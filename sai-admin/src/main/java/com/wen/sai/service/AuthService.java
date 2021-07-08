@@ -1,7 +1,7 @@
 package com.wen.sai.service;
 
 import com.wen.sai.common.api.CommonResult;
-import com.wen.sai.common.domain.dto.Oauth2TokenDTO;
+import com.wen.sai.common.entity.vo.UserVO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,11 +20,11 @@ import java.util.Map;
 public interface AuthService {
 
     /**
-     * 加载 Token
+     * 加载令牌
      *
-     * @param params 请求参数
+     * @param paramMap 请求参数
      * @return 返回结果
      */
     @PostMapping("/oauth/token")
-    CommonResult<Oauth2TokenDTO> loadToken(@RequestParam Map<String, String> params);
+    CommonResult<UserVO> loadToken(@RequestParam Map<String, String> paramMap);
 }

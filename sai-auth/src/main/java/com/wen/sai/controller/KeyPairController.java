@@ -15,7 +15,7 @@ import java.util.Map;
 
 /**
  * <p>
- * 秘钥对相关操作 Controller
+ * 秘钥对相关功能 Controller
  * </p>
  *
  * @author wenjun

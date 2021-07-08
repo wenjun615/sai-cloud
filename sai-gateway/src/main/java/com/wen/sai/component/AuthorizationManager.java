@@ -1,11 +1,10 @@
 package com.wen.sai.component;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.convert.Convert;
-import com.wen.sai.common.domain.constant.AuthConstant;
-import com.wen.sai.common.domain.constant.RedisKeyConstant;
-import com.wen.sai.common.service.RedisService;
-import com.wen.sai.config.IgnoreUrlsConfig;
+import com.google.common.base.Predicate;
+import com.wen.sai.common.constant.AuthConstants;
+import com.wen.sai.config.IgnoreProperties;
+import com.wen.sai.service.AuthorityService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -37,9 +36,9 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class AuthorizationManager implements ReactiveAuthorizationManager<AuthorizationContext> {
 
-    private final IgnoreUrlsConfig ignoreUrlsConfig;
+    private final IgnoreProperties ignoreProperties;
 
-    private final RedisService redisService;
+    private final AuthorityService authorityService;
 
     @Override
     public Mono<AuthorizationDecision> check(Mono<Authentication> mono, AuthorizationContext authorizationContext) {
@@ -48,35 +47,38 @@ public class AuthorizationManager implements ReactiveAuthorizationManager<Author
         if (Objects.equals(request.getMethod(), HttpMethod.OPTIONS)) {
             return Mono.just(new AuthorizationDecision(true));
         }
-        URI uri = request.getURI();
         AntPathMatcher pathMatcher = new AntPathMatcher();
+        URI uri = request.getURI();
         // 白名单放行
-        for (String url : ignoreUrlsConfig.getUrls()) {
-            if (pathMatcher.match(url, uri.getPath())) {
+        for (String pattern : ignoreProperties.getUrls()) {
+            if (pathMatcher.match(pattern, uri.getPath())) {
                 return Mono.just(new AuthorizationDecision(true));
             }
         }
-        // 当前访问的资源所需要的权限，用户拥有的权限满足其中任一即可
-        List<String> authorities = new ArrayList<>();
-        // 从缓存中获取 所有资源 与 对应角色 的 规则
-        Map<Object, Object> resourceRolesMap = redisService.hGetAll(RedisKeyConstant.RESOURCE_ROLES_KEY);
-        for (Map.Entry<Object, Object> entry : resourceRolesMap.entrySet()) {
+        List<String> authorityList = new ArrayList<>();
+        Map<Object, Object> authorityMap = authorityService.getAuthorityMap();
+        for (Map.Entry<Object, Object> entry : authorityMap.entrySet()) {
             if (pathMatcher.match((String) entry.getKey(), uri.getPath())) {
-                authorities.addAll(Convert.toList(String.class, entry.getValue()));
+                authorityList.add((String) entry.getValue());
             }
         }
-        // 当前访问资源不需要权限直接放行
-        if (CollUtil.isEmpty(authorities)) {
-            return Mono.just(new AuthorizationDecision(true));
+        // 当前访问资源不需要权限，已认证即放行
+        if (CollUtil.isEmpty(authorityList)) {
+            return mono.filter(Authentication::isAuthenticated)
+                    .flatMapIterable(Authentication::getAuthorities)
+                    .map(GrantedAuthority::getAuthority)
+                    .any((Predicate<String>) s -> true)
+                    .map(AuthorizationDecision::new)
+                    .defaultIfEmpty(new AuthorizationDecision(false));
         }
-        authorities = authorities.stream()
-                .map(authority -> AuthConstant.AUTHORITY_PREFIX + authority)
+        authorityList = authorityList.stream()
+                .map(authority -> AuthConstants.AUTHORITY_PREFIX + authority)
                 .collect(Collectors.toList());
         // 已认证且角色权限足够放行
         return mono.filter(Authentication::isAuthenticated)
                 .flatMapIterable(Authentication::getAuthorities)
                 .map(GrantedAuthority::getAuthority)
-                .any(authorities::contains)
+                .any(authorityList::contains)
                 .map(AuthorizationDecision::new)
                 .defaultIfEmpty(new AuthorizationDecision(false));
     }

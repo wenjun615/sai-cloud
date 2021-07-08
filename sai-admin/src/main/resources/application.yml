@@ -6,29 +6,21 @@ spring:
     name: sai-admin
   profiles:
     active: dev
-  cloud:
-    nacos:
-      discovery:
-        server-addr: http://localhost:8848
-      config:
-        server-addr: http://localhost:8848
-        file-extension: yaml
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-  endpoint:
-    health:
-      show-details: always
 
 mybatis-plus:
-  mapper-locations: classpath:com.wen.sai/mapper/*.xml
+  global-config:
+    db-config:
+      logic-delete-field: deleted # 逻辑删除实体属性
+      logic-delete-value: 1 # 删除
+      logic-not-delete-value: 0 # 未删除
+  mapper-locations:
+    - classpath*:/mapper/**/*Mapper.xml
 
+# 自定义 Redis 配置
 redis:
-  database: sai-cloud
+  database: sai
   key:
-    admin: 'ums:admin'
-    roleList: 'ums:roleList'
+    user: user
+    resources: resources
+    authorities: authorities
   expire: 86400 # 秒 24 小时

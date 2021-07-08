@@ -1,7 +1,7 @@
 package com.wen.sai.common.exception;
 
-import com.wen.sai.common.api.ResultCode;
-import lombok.Data;
+import com.wen.sai.common.api.CommonCode;
+import lombok.Getter;
 
 /**
  * <p>
@@ -9,19 +9,21 @@ import lombok.Data;
  * </p>
  *
  * @author wenjun
- * @since 2021/1/25
+ * @since 2020/12/17
  */
-@Data
+@Getter
 public class ApiException extends RuntimeException {
 
-    /**
-     * 操作码
-     */
-    private ResultCode resultCode;
+    private static final long serialVersionUID = 1820168484211116930L;
 
-    public ApiException(ResultCode resultCode) {
-        super(resultCode.getMessage());
-        this.resultCode = resultCode;
+    /**
+     * 公共响应码枚举
+     */
+    private CommonCode commonCode;
+
+    public ApiException(CommonCode commonCode) {
+        super(commonCode.getMessage());
+        this.commonCode = commonCode;
     }
 
     public ApiException(String message) {

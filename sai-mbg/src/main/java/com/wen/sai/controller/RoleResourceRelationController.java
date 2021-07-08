@@ -1,22 +1,20 @@
 package com.wen.sai.controller;
 
-
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
-import com.wen.sai.common.domain.BaseController;
+import com.wen.sai.entity.base.BaseController;
 
 /**
  * <p>
- * 后台角色和资源关系表 前端控制器
+ * 角色和资源关系表 前端控制器
  * </p>
  *
  * @author wenjun
- * @since 2021-02-20
+ * @since 2021-07-03
  */
 @RestController
-@RequestMapping("/role-resource-relation")
+@RequestMapping("/roleResourceRelation")
 public class RoleResourceRelationController extends BaseController {
 
 }
-

@@ -44,7 +44,7 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     private final JwtTokenEnhancer jwtTokenEnhancer;
 
     @Override
-    public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
+    public void configure(AuthorizationServerSecurityConfigurer security) {
         // 支持 client_id 跟 client_secret 登录认证
         security.allowFormAuthenticationForClients();
     }
@@ -58,14 +58,14 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .scopes("all")
                 // 支持的授权模式
                 .authorizedGrantTypes("password", "refresh_token")
-                // 访问 Token 的有效期 60*60
+                // 访问令牌的有效期 60 * 60
                 .accessTokenValiditySeconds(3600)
-                // 刷新 Token 的有效期 60*60*24
+                // 刷新令牌的有效期 60 * 60 * 24
                 .refreshTokenValiditySeconds(86400);
     }
 
     @Override
-    public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
+    public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
         TokenEnhancerChain tokenEnhancerChain = new TokenEnhancerChain();
         List<TokenEnhancer> tokenEnhancerList = new ArrayList<>();
         tokenEnhancerList.add(jwtTokenEnhancer);
@@ -78,26 +78,25 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     }
 
     /**
-     * 使用 JWT 存储令牌
+     * 使用 JWT 令牌
      */
     @Bean
     public JwtAccessTokenConverter jwtAccessTokenConverter() {
         JwtAccessTokenConverter jwtAccessTokenConverter = new JwtAccessTokenConverter();
-        // 配置 JWT 使用的秘钥对
+        // 设置非对称加密密钥对
         jwtAccessTokenConverter.setKeyPair(keyPair());
         return jwtAccessTokenConverter;
     }
 
     /**
-     * 获取 jwt.jks 证书中的密钥对
+     * jwt.jks 证书中的密钥对
      *
      * @return 密钥对
      */
     @Bean
     public KeyPair keyPair() {
-        KeyStoreKeyFactory keyStoreKeyFactory = new KeyStoreKeyFactory(
-                new ClassPathResource("jwt.jks"),
-                "123456".toCharArray());
-        return keyStoreKeyFactory.getKeyPair("jwt", "123456".toCharArray());
+        char[] secret = "123456".toCharArray();
+        KeyStoreKeyFactory keyStoreKeyFactory = new KeyStoreKeyFactory(new ClassPathResource("jwt.jks"), secret);
+        return keyStoreKeyFactory.getKeyPair("jwt", secret);
     }
 }

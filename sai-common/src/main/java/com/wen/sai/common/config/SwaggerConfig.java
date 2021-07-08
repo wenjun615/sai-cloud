@@ -1,6 +1,6 @@
 package com.wen.sai.common.config;
 
-import com.wen.sai.common.domain.SwaggerProperty;
+import com.wen.sai.common.entity.SwaggerApiInfo;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -27,16 +27,22 @@ public class SwaggerConfig {
 
     /**
      * 创建 API 应用
-     *
-     * @return Docket
      */
     @Bean
     public Docket createRestApi() {
-        SwaggerProperty swaggerProperty = swaggerProperty();
+        SwaggerApiInfo swaggerApiInfo = SwaggerApiInfo.builder()
+                .basePackage("com.wen.sai")
+                .title("Sai API 文档")
+                .description("Sai API 文档")
+                .version("1.0.0")
+                .contactName("wenjun")
+                .contactUrl("https://github.com/wenjun615")
+                .contactEmail("835045686@qq.com")
+                .build();
         return new Docket(DocumentationType.OAS_30)
-                .apiInfo(apiInfo(swaggerProperty))
+                .apiInfo(apiInfo(swaggerApiInfo))
                 .select()
-                .apis(RequestHandlerSelectors.basePackage(swaggerProperty.getApiBasePackage()))
+                .apis(RequestHandlerSelectors.basePackage(swaggerApiInfo.getBasePackage()))
                 .paths(PathSelectors.any())
                 .build()
                 .securitySchemes(securitySchemes())
@@ -44,44 +50,25 @@ public class SwaggerConfig {
     }
 
     /**
-     * Swagger 配置属性
-     *
-     * @return Swagger 配置属性
-     */
-    private SwaggerProperty swaggerProperty() {
-        return SwaggerProperty.builder()
-                .apiBasePackage("com.wen.sai.controller")
-                .title("Sai Cloud API 文档")
-                .description("Sai Cloud API 文档")
-                .version("1.0.0")
-                .contactName("wenjun")
-                .contactUrl("")
-                .contactEmail("835045686@qq.com")
-                .build();
-    }
-
-    /**
      * API 文档基本信息
      *
-     * @param swaggerProperty Swagger 配置属性
-     * @return ApiInfo
+     * @param swaggerApiInfo Swagger API 文档信息
+     * @return API 文档基本信息
      */
-    private ApiInfo apiInfo(SwaggerProperty swaggerProperty) {
+    private ApiInfo apiInfo(SwaggerApiInfo swaggerApiInfo) {
         return new ApiInfoBuilder()
-                .title(swaggerProperty.getTitle())
-                .description(swaggerProperty.getDescription())
-                .version(swaggerProperty.getVersion())
+                .title(swaggerApiInfo.getTitle())
+                .description(swaggerApiInfo.getDescription())
+                .version(swaggerApiInfo.getVersion())
                 .contact(new Contact(
-                        swaggerProperty.getContactName(),
-                        swaggerProperty.getContactUrl(),
-                        swaggerProperty.getContactEmail()))
+                        swaggerApiInfo.getContactName(),
+                        swaggerApiInfo.getContactUrl(),
+                        swaggerApiInfo.getContactEmail()))
                 .build();
     }
 
     /**
-     * 配置授权信息
-     *
-     * @return List<SecurityScheme>
+     * 授权配置
      */
     private List<SecurityScheme> securitySchemes() {
         return Collections.singletonList(new ApiKey(
@@ -92,11 +79,9 @@ public class SwaggerConfig {
 
     /**
      * 授权信息全局应用
-     *
-     * @return List<SecurityContext>
      */
     private List<SecurityContext> securityContexts() {
-        AuthorizationScope[] scopes = {new AuthorizationScope("global", "accessEverything")};
+        AuthorizationScope[] scopes = {new AuthorizationScope("global", "授权信息全局应用")};
         SecurityReference reference = new SecurityReference("Authorization", scopes);
         SecurityContext context = SecurityContext.builder()
                 .securityReferences(Collections.singletonList(reference))

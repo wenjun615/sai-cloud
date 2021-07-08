@@ -12,7 +12,7 @@ import java.util.Optional;
 
 /**
  * <p>
- * 自定义 Swagger 各个获取数据的接口
+ * Swagger Controller
  * </p>
  *
  * @author wenjun
@@ -43,7 +43,7 @@ public class SwaggerController {
      * Swagger 安全配置
      */
     @GetMapping("/swagger-resources/configuration/security")
-    public Mono<ResponseEntity<SecurityConfiguration>> securityConfiguration() {
+    public Mono<ResponseEntity<SecurityConfiguration>> security() {
         return Mono.just(new ResponseEntity<>(
                 Optional.ofNullable(securityConfiguration).orElse(SecurityConfigurationBuilder.builder().build()),
                 HttpStatus.OK
@@ -54,7 +54,7 @@ public class SwaggerController {
      * Swagger UI 配置
      */
     @GetMapping("/swagger-resources/configuration/ui")
-    public Mono<ResponseEntity<UiConfiguration>> uiConfiguration() {
+    public Mono<ResponseEntity<UiConfiguration>> ui() {
         return Mono.just(new ResponseEntity<>(
                 Optional.ofNullable(uiConfiguration).orElse(UiConfigurationBuilder.builder().build()),
                 HttpStatus.OK
@@ -62,7 +62,7 @@ public class SwaggerController {
     }
 
     /**
-     * Swagger 资源配置，各个服务的 api-docs 信息
+     * Swagger 资源配置，所有服务的 api-docs 信息
      */
     @GetMapping("/swagger-resources")
     public Mono<ResponseEntity<List<SwaggerResource>>> swaggerResources() {

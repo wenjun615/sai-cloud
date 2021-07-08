@@ -7,9 +7,6 @@ spring:
   profiles:
     active: dev
   cloud:
-    nacos:
-      discovery:
-        server-addr: http://localhost:8848
     gateway:
       discovery:
         locator:
@@ -21,22 +18,18 @@ spring:
           predicates:
             - Path=/sai-auth/**
           filters:
-            - StripPrefix=1 # 匹配的请求路径去掉第一位，即 / 符号
+            - StripPrefix=1 # 匹配的请求去掉的路径个数，这里是将 /sai-auth 去掉
         - id: sai-admin
           uri: lb://sai-admin
           predicates:
             - Path=/sai-admin/**
           filters:
             - StripPrefix=1
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          jwk-set-uri: 'http://localhost:8201/sai-auth/keyPair/loadPublicKey' # RSA 公钥访问地址
 
+# 自定义安全配置
 secure:
   ignore:
-    urls: # 白名单路径
+    urls:
       - "/swagger-resources/**"
       - "/**/v3/api-docs"
       - "/swagger-ui/**"
@@ -47,13 +40,13 @@ secure:
       - "/actuator/**"
       - "/sai-auth/oauth/token"
       - "/sai-auth/keyPair/loadPublicKey"
-      - "/sai-admin/admin/login"
+      - "/sai-admin/user/login"
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-  endpoint:
-    health:
-      show-details: always
+# 自定义 Redis 配置
+redis:
+  database: sai
+  key:
+    user: user
+    resources: resources
+    authorities: authorities
+  expire: 86400 # 秒 24 小时

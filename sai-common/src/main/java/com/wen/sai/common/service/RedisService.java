@@ -6,7 +6,7 @@ import java.util.Set;
 
 /**
  * <p>
- * Redis 相关操作接口
+ * Redis 操作接口
  * </p>
  *
  * @author wenjun
@@ -254,7 +254,7 @@ public interface RedisService {
     Long lPush(String key, Object value);
 
     /**
-     * 添加 List 元素
+     * 添加 List 元素并设置过期时间
      *
      * @param key   键
      * @param value List 元素
@@ -273,7 +273,7 @@ public interface RedisService {
     Long lPush(String key, Object... values);
 
     /**
-     * 批量添加 List 元素
+     * 批量添加 List 元素并设置过期时间
      *
      * @param key    键
      * @param time   过期时间（秒）
@@ -283,21 +283,21 @@ public interface RedisService {
     Long lPush(String key, long time, Object... values);
 
     /**
-     * 获取索引位置元素
+     * 获取 List 索引位置元素
      *
      * @param key   键
-     * @param index 索引，0 开始
+     * @param index 索引位置，0 开始
      * @return List 元素
      */
     Object lIndex(String key, long index);
 
     /**
-     * 获取列表指定区间元素
+     * 获取 List 指定区间元素
      *
      * @param key   键
      * @param start 起始位置，由 0 开始，-1 表示最后一个，-2 表示倒数第二个，以此类推
      * @param end   终止位置
-     * @return List 元素
+     * @return List 元素列表
      */
     List<Object> lRange(String key, long start, long end);
 
@@ -305,7 +305,7 @@ public interface RedisService {
      * 移除 List 元素
      *
      * @param key   键
-     * @param count >0 删除左边第一个 value，<0 删除右边第一个 value，=0 删除所有 value
+     * @param count >0 从表头（左）删除 count 个 value，<0 反之，=0 删除所有 value
      * @param value List 元素
      * @return List 长度
      */

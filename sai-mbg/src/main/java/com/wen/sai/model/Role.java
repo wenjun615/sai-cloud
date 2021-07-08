@@ -1,7 +1,7 @@
 package com.wen.sai.model;
 
 import com.baomidou.mybatisplus.annotation.*;
-import com.wen.sai.common.domain.BaseEntity;
+import com.wen.sai.entity.base.BaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -11,16 +11,16 @@ import java.util.Date;
 
 /**
  * <p>
- * 后台角色表
+ * 角色表
  * </p>
  *
  * @author wenjun
- * @since 2021-02-20
+ * @since 2021-03-21
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-@TableName("ums_role")
-@ApiModel(value = "Role对象", description = "后台角色表")
+@TableName("role")
+@ApiModel(value = "Role对象", description = "角色表")
 public class Role extends BaseEntity {
 
     private static final long serialVersionUID = 1L;
@@ -37,11 +37,7 @@ public class Role extends BaseEntity {
     @TableField("description")
     private String description;
 
-    @ApiModelProperty(value = "状态：1启用，0禁用")
-    @TableField("status")
-    private Integer status;
-
-    @ApiModelProperty(value = "是否删除：1是，0否")
+    @ApiModelProperty(value = "是否删除")
     @TableField("is_deleted")
     @TableLogic
     private Integer deleted;

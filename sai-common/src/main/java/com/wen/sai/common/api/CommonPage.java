@@ -8,7 +8,7 @@ import java.util.List;
 
 /**
  * <p>
- * 公共分页数据封装类
+ * 公共分页类
  * </p>
  *
  * @author wenjun
@@ -49,7 +49,7 @@ public class CommonPage<T> {
      * @param <T>  分页数据类型
      * @return 公共分页对象
      */
-    public static <T> CommonPage<T> restPage(Page<T> page) {
+    public static <T> CommonPage<T> convertPage(Page<T> page) {
         CommonPage<T> commonPage = new CommonPage<>();
         commonPage.setCurrent(Convert.toInt(page.getCurrent()));
         commonPage.setSize(Convert.toInt(page.getSize()));
